@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCap - User Story Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: auto;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #1a1a1a, #333333);
+      padding: 30px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid #dc2626;
+      min-height: 120px;
+    }
+    
+    .input-panel {
+      padding: 40px;
+      background: #1a1a2e;
+    }
+    
+    .template-system {
+      background: linear-gradient(135deg, #16213e, #0f3460);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-left: 5px solid #22c55e;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .template-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #e2e8f0;
+    }
+    
+    .template-subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+    
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 15px;
+    }
+    
+    .template-card {
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 18px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .template-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .template-card:hover:before {
+      transform: scaleX(1);
+    }
+    
+    .template-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+      border-color: #22c55e;
+    }
+    
+    .template-card.selected {
+      border-color: #dc2626;
+      background: linear-gradient(135deg, #450a0a, #7f1d1d);
+    }
+    
+    .template-card.selected:before {
+      transform: scaleX(1);
+      background: linear-gradient(90deg, #dc2626, #ef4444);
+    }
+    
+    .template-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+    
+    .template-description {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    
+    .template-example {
+      background: rgba(34, 197, 94, 0.1);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-style: italic;
+      color: #cbd5e1;
+      border-left: 3px solid #22c55e;
+      line-height: 1.3;
+    }
+    
+    .template-tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .template-tag {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+      padding: 3px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .form-section {
+      background: #0f3460;
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 1px solid #1a4d7a;
+      margin-bottom: 30px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .form-label {
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    
+    .required::after {
+      content: " *";
+      color: #dc2626;
+    }
+    
+    .form-input, .form-textarea, .form-select {
+      padding: 15px;
+      border: 2px solid #1a4d7a;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #16213e;
+      color: #e2e8f0;
+      font-family: inherit;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #22c55e;
+      background: #0f3460;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .attribute-container {
+      margin-bottom: 16px;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      background: #16213e;
+      border: 2px solid #1a4d7a;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-wrapper:hover {
+      border-color: #22c55e;
+      background: #0f3460;
+    }
+
+    .checkbox-wrapper.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .field-input {
+      margin-top: 12px;
+      padding-left: 32px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .field-input.show {
+      max-height: 500px;
+      opacity: 1;
+      margin-bottom: 8px;
+    }
+
+    .input-label {
+      display: block;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .field-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #1a4d7a;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      background: #16213e;
+      color: #e2e8f0;
+      transition: all 0.3s ease;
+      min-height: 100px;
+    }
+
+    .field-textarea:focus {
+      outline: none;
+      border-color: #22c55e;
+      background: #0f3460;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .field-select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #1a4d7a;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #16213e;
+      color: #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .field-select:focus {
+      outline: none;
+      border-color: #22c55e;
+      background: #0f3460;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+      color: white;
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #2196F3, #42A5F5);
+      color: white;
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+    }
+    
+    .btn-accent {
+      background: linear-gradient(135deg, #6B7280, #9CA3AF);
+      color: white;
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+    }
+    
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #1f2937;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast.success {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+    
+    .toast.error {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+
+    @media (max-width: 1024px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <div class="header">
+      <svg class="new-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 260" style="width: 100%; max-width: 650px; height: auto; margin: 0 auto; display: block;">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#d1d5db"/><stop offset="100%" stop-color="#374151"/>
+          </linearGradient>
+          <filter id="s"><feDropShadow dx="2" dy="2" stdDeviation="4" flood-color="#000" flood-opacity=".7"/></filter>
+        </defs>
+        <g transform="translate(20,20)scale(1.08)" stroke="#22c55e" stroke-width="6" fill="none">
+          <path d="M64 16C44 16,28 32,28 52c0 14,9 26,20 32v10h32v-10c11-6,20-18,20-32C100 32,84 16,64 16Z"/>
+          <path d="M64 56l-10 12M64 56l10 12M64 56v16"/><line x1="46" y1="100" x2="82" y2="100"/>
+          <line x1="48" y1="112" x2="80" y2="112"/><line x1="52" y1="124" x2="76" y2="124"/>
+        </g>
+        <text x="160" y="100" font-family="Impact" font-size="88" font-weight="900" fill="url(#g)" filter="url(#s)">ThoughtCap Stories</text>
+        <text x="160" y="160" font-family="Impact" font-size="50" font-weight="900" fill="url(#g)" filter="url(#s)">Build Consistent User Stories</text>
+      </svg>
+    </div>
+    
+    <div class="input-panel">
+
+      <div class="template-system">
+        <div class="template-title">Choose Your Story Template</div>
+        <div class="template-subtitle">
+          Select the user story format your team uses. All stories will be generated using this template.
+        </div>
+        
+        <div class="template-grid">
+          
+          <div class="template-card selected" onclick="selectTemplate('classic')" data-template="classic">
+            <div class="template-name">Classic Agile</div>
+            <div class="template-description">
+              The standard user story format used by most agile teams worldwide
+            </div>
+            <div class="template-example">
+              "As a user, I want to login so that I can access my account"
+            </div>
+            <div class="template-tags">
+              <span class="template-tag">Most Popular</span>
+              <span class="template-tag">Scrum</span>
+            </div>
+          </div>
+          
+          <div class="template-card" onclick="selectTemplate('job-stories')" data-template="job-stories">
+            <div class="template-name">Job Stories</div>
+            <div class="template-description">
+              Context-driven format focusing on situations and motivations
+            </div>
+            <div class="template-example">
+              "When I'm away from my computer, I want to receive mobile notifications, so I can stay informed"
+            </div>
+            <div class="template-tags">
+              <span class="template-tag">Context-Rich</span>
+              <span class="template-tag">JTBD</span>
+            </div>
+          </div>
+          
+          <div class="template-card" onclick="selectTemplate('feature-driven')" data-template="feature-driven">
+            <div class="template-name">Feature-Driven</div>
+            <div class="template-description">
+              Business value first approach emphasizing the benefit upfront
+            </div>
+            <div class="template-example">
+              "In order to improve security, as a system admin, I want two-factor authentication"
+            </div>
+            <div class="template-tags">
+              <span class="template-tag">Value-First</span>
+              <span class="template-tag">BDD</span>
+            </div>
+          </div>
+          
+          <div class="template-card" onclick="selectTemplate('simple')" data-template="simple">
+            <div class="template-name">Simple Format</div>
+            <div class="template-description">
+              Clean, direct format without formal structure constraints
+            </div>
+            <div class="template-example">
+              "Users need to reset passwords to regain account access"
+            </div>
+            <div class="template-tags">
+              <span class="template-tag">Flexible</span>
+              <span class="template-tag">Minimal</span>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+      <div class="form-section">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label class="form-label" for="project-name">Project Name</label>
+            <input type="text" class="form-input" id="project-name" placeholder="e.g., E-commerce Platform" value="Customer Portal">
+            <div class="form-hint">Name of your project or feature set</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="story-scale">Story Point Scale</label>
+            <select class="form-select" id="story-scale">
+              <option value="fibonacci">Fibonacci (1,2,3,5,8)</option>
+              <option value="linear">Linear (1,2,3,4,5)</option>
+              <option value="tshirt">T-Shirt (XS,S,M,L,XL)</option>
+            </select>
+            <div class="form-hint">Estimation scale for your team</div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label class="form-label required" for="requirements">Functional Requirement</label>
+            <textarea class="form-textarea" id="requirements" rows="4" placeholder="Enter a single functional requirement or user story description..." required></textarea>
+            <div class="form-hint">Describe ONE feature or requirement (e.g., "The system shall allow administrators to reset user passwords")</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="complexity">Story Complexity</label>
+            <select class="form-select" id="complexity">
+              <option value="simple">Simple (Quick features)</option>
+              <option value="moderate" selected>Moderate (Standard features)</option>
+              <option value="complex">Complex (Advanced features)</option>
+            </select>
+            <div class="form-hint">Target complexity for generated stories</div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label class="form-label">Story Attributes</label>
+            <div class="form-hint">Check attributes to include and provide details below</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px;">
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper disabled">
+                  <input type="checkbox" id="field-story" checked disabled style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">User Story (required)</label>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('title')">
+                  <input type="checkbox" id="field-title" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Title/Summary</label>
+                </div>
+                <div id="title-input" class="field-input">
+                  <label class="input-label">Story title:</label>
+                  <input id="input-title" type="text" class="field-select" placeholder="e.g., User Login Feature, Payment Processing">
+                  <div class="field-hint">Short descriptive name for this story</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('epic')">
+                  <input type="checkbox" id="field-epic" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Epic/Theme</label>
+                </div>
+                <div id="epic-input" class="field-input">
+                  <label class="input-label">Epic or theme name:</label>
+                  <input id="input-epic" type="text" class="field-select" placeholder="e.g., User Management, Payment System">
+                  <div class="field-hint">The larger feature set this story belongs to</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('priority')">
+                  <input type="checkbox" id="field-priority" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Priority Level</label>
+                </div>
+                <div id="priority-input" class="field-input">
+                  <label class="input-label">Select priority:</label>
+                  <select id="input-priority" class="field-select">
+                    <option value="">Choose...</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                  <div class="field-hint">How urgently is this needed?</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('points')">
+                  <input type="checkbox" id="field-points" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Story Points</label>
+                </div>
+                <div id="points-input" class="field-input">
+                  <label class="input-label">Select story points:</label>
+                  <select id="input-points" class="field-select">
+                    <option value="">Choose...</option>
+                    <option value="1">1 - Trivial</option>
+                    <option value="2">2 - Minor</option>
+                    <option value="3">3 - Small</option>
+                    <option value="5">5 - Medium</option>
+                    <option value="8">8 - Large</option>
+                    <option value="13">13 - Very Large</option>
+                  </select>
+                  <div class="field-hint">Based on Fibonacci scale</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('description')">
+                  <input type="checkbox" id="field-description" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Description</label>
+                </div>
+                <div id="description-input" class="field-input">
+                  <label class="input-label">Detailed description:</label>
+                  <textarea id="input-description" class="field-textarea" placeholder="Provide additional context, background information, design considerations, or any relevant details..." rows="4"></textarea>
+                  <div class="field-hint">Additional context and background for this story</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('criteria')">
+                  <input type="checkbox" id="field-criteria" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Acceptance Criteria</label>
+                </div>
+                <div id="criteria-input" class="field-input">
+                  <label class="input-label">Enter criteria (one per line):</label>
+                  <textarea id="input-criteria" class="field-textarea" placeholder="Given the user is logged in&#10;When they click the save button&#10;Then the data is persisted to the database" rows="4"></textarea>
+                  <div class="field-hint">Use Given-When-Then format for best results</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('dod')">
+                  <input type="checkbox" id="field-dod" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Definition of Done</label>
+                </div>
+                <div id="dod-input" class="field-input">
+                  <label class="input-label">List completion criteria:</label>
+                  <textarea id="input-dod" class="field-textarea" placeholder="Code is written and peer reviewed&#10;Unit tests are written and passing&#10;Feature is tested in development&#10;Documentation is updated" rows="4"></textarea>
+                  <div class="field-hint">What must be complete before this story is done?</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('dependencies')">
+                  <input type="checkbox" id="field-dependencies" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Dependencies</label>
+                </div>
+                <div id="dependencies-input" class="field-input">
+                  <label class="input-label">List dependencies (one per line):</label>
+                  <textarea id="input-dependencies" class="field-textarea" placeholder="Database schema updates&#10;API endpoint creation&#10;Authentication service" rows="3"></textarea>
+                  <div class="field-hint">What must be completed first?</div>
+                </div>
+              </div>
+              
+              <div class="attribute-container">
+                <div class="checkbox-wrapper" onclick="toggleFieldInput('technical')">
+                  <input type="checkbox" id="field-technical" style="width: 18px; height: 18px; accent-color: #dc2626;">
+                  <label style="margin: 0; font-weight: 500; color: #cbd5e1; flex: 1;">Technical Notes</label>
+                </div>
+                <div id="technical-input" class="field-input">
+                  <label class="input-label">Technical implementation notes:</label>
+                  <textarea id="input-technical" class="field-textarea" placeholder="Use existing authentication library&#10;Follow REST API conventions&#10;Implement rate limiting" rows="3"></textarea>
+                  <div class="field-hint">Implementation guidance for developers</div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="generateStories()" id="generateBtn">
+            <span>Generate Story</span>
+          </button>
+          <button class="btn btn-accent" onclick="clearAll()" id="clearBtn">
+            <span>Clear Form</span>
+          </button>
+        </div>
+        
+      </div>
+
+      <div class="form-section">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #1e293b;">Export Library Options</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+          <div style="padding: 12px 20px; border: 2px solid #1a4d7a; background: #16213e; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; color: #e2e8f0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="exportFormat('jira')" onmouseover="this.style.borderColor='#22c55e'; this.style.background='linear-gradient(135deg, #064e3b, #065f46)'" onmouseout="this.style.borderColor='#1a4d7a'; this.style.background='#16213e'">
+            <svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Jira CSV
+          </div>
+          <div style="padding: 12px 20px; border: 2px solid #1a4d7a; background: #16213e; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; color: #e2e8f0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="exportFormat('azure')" onmouseover="this.style.borderColor='#22c55e'; this.style.background='linear-gradient(135deg, #064e3b, #065f46)'" onmouseout="this.style.borderColor='#1a4d7a'; this.style.background='#16213e'">
+            <svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+            Azure DevOps
+          </div>
+          <div style="padding: 12px 20px; border: 2px solid #1a4d7a; background: #16213e; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; color: #e2e8f0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="exportFormat('markdown')" onmouseover="this.style.borderColor='#22c55e'; this.style.background='linear-gradient(135deg, #064e3b, #065f46)'" onmouseout="this.style.borderColor='#1a4d7a'; this.style.background='#16213e'">
+            <svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Markdown
+          </div>
+          <div style="padding: 12px 20px; border: 2px solid #1a4d7a; background: #16213e; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; color: #e2e8f0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="exportFormat('json')" onmouseover="this.style.borderColor='#22c55e'; this.style.background='linear-gradient(135deg, #064e3b, #065f46)'" onmouseout="this.style.borderColor='#1a4d7a'; this.style.background='#16213e'">
+            <svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            JSON Data
+          </div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+          <button class="btn btn-secondary" onclick="toggleLibrary()" style="display: inline-flex; align-items: center; gap: 8px;">
+            <svg style="width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <span>View Library</span>
+          </button>
+          <button class="btn btn-secondary" onclick="addNewUserStory()" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;">
+            <svg style="width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add New User Story</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-section" id="librarySection" style="display: none; margin-top: 30px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; background: linear-gradient(135deg, #1a1a1a, #333333); padding: 20px 28px; border-bottom: 3px solid #dc2626; border-radius: 16px 16px 0 0; margin: -35px -35px 20px -35px; position: relative;">
+          <h3 style="font-size: 24px; font-weight: 900; color: #ffffff; font-family: Impact, 'Arial Black', sans-serif; letter-spacing: 1px;">LIBRARY</h3>
+          <button onclick="toggleLibrary()" style="background: none; border: none; font-size: 32px; cursor: pointer; color: #ffffff; line-height: 1; position: absolute; right: 28px;">&times;</button>
+        </div>
+        <div id="libraryContent">
+          <div style="padding: 60px; text-align: center; color: #64748b;">
+            <svg style="width: 64px; height: 64px; stroke: #cbd5e1; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 20px;" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <h4 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #374151;">Library Coming Soon</h4>
+            <p style="font-size: 14px;">This is where your saved stories will appear.</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <script>
+    var appState = {
+      selectedTemplate: 'classic'
+    };
+
+    function selectTemplate(templateType) {
+      document.querySelectorAll('.template-card').forEach(function(card) {
+        card.classList.remove('selected');
+      });
+      
+      var targetCard = document.querySelector('[data-template="' + templateType + '"]');
+      if (targetCard) {
+        targetCard.classList.add('selected');
+      }
+      
+      appState.selectedTemplate = templateType;
+      showToast('Selected ' + getTemplateDisplayName() + ' template', 'success');
+    }
+    
+    function getTemplateDisplayName() {
+      var templateNames = {
+        'classic': 'Classic Agile',
+        'job-stories': 'Job Stories', 
+        'feature-driven': 'Feature-Driven',
+        'simple': 'Simple Format'
+      };
+      return templateNames[appState.selectedTemplate] || 'Classic Agile';
+    }
+    
+    function toggleFieldInput(fieldName) {
+      var checkbox = document.getElementById('field-' + fieldName);
+      var input = document.getElementById(fieldName + '-input');
+      
+      if (!checkbox || !input) {
+        return;
+      }
+      
+      if (!checkbox.disabled) {
+        checkbox.checked = !checkbox.checked;
+      }
+      
+      if (checkbox.checked) {
+        input.classList.add('show');
+      } else {
+        input.classList.remove('show');
+      }
+    }
+    
+    function getSelectedFields() {
+      return {
+        story: true,
+        title: document.getElementById('field-title').checked,
+        epic: document.getElementById('field-epic').checked,
+        priority: document.getElementById('field-priority').checked,
+        points: document.getElementById('field-points').checked,
+        description: document.getElementById('field-description').checked,
+        criteria: document.getElementById('field-criteria').checked,
+        dod: document.getElementById('field-dod').checked,
+        dependencies: document.getElementById('field-dependencies').checked,
+        technical: document.getElementById('field-technical').checked
+      };
+    }
+    
+    function generateStories() {
+      var requirements = document.getElementById('requirements').value.trim();
+      var projectName = document.getElementById('project-name').value.trim();
+      
+      if (!requirements) {
+        showToast('Please enter a functional requirement', 'error');
+        return;
+      }
+      
+      if (!projectName) {
+        showToast('Please enter a project name', 'error');
+        return;
+      }
+      
+      if (requirements.length < 10) {
+        showToast('Please enter a more detailed requirement', 'error');
+        return;
+      }
+      
+      showToast('Generating user story...', 'success');
+      
+      setTimeout(function() {
+        var existingStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+        var nextId = existingStories.length + 1;
+        
+        var story = createStory(requirements, nextId);
+        
+        existingStories.push(story);
+        localStorage.setItem('usb_stories', JSON.stringify(existingStories));
+        
+        showToast('User story created successfully!', 'success');
+        
+        document.getElementById('requirements').value = '';
+        
+        var attributeCheckboxes = document.querySelectorAll('.field-input.show');
+        attributeCheckboxes.forEach(function(input) {
+          input.classList.remove('show');
+        });
+        
+        document.querySelectorAll('input[type="checkbox"]:not(#field-story)').forEach(function(cb) {
+          cb.checked = false;
+        });
+        
+        document.querySelectorAll('.field-input input, .field-input textarea, .field-input select').forEach(function(field) {
+          field.value = '';
+        });
+        
+        toggleLibrary();
+      }, 800);
+    }
+    
+    function createStory(requirement, id) {
+      var selectedFields = getSelectedFields();
+      
+      var story = {
+        id: 'US-' + String(id).padStart(3, '0'),
+        userStory: generateUserStory(requirement),
+        selectedFields: selectedFields,
+        created: new Date().toLocaleDateString(),
+        timestamp: new Date().toISOString(),
+        uniqueId: Date.now() + id
+      };
+      
+      if (selectedFields.title) {
+        var titleEl = document.getElementById('input-title');
+        var titleValue = titleEl ? titleEl.value.trim() : '';
+        story.title = titleValue || 'User Story Feature';
+      }
+      
+      if (selectedFields.description) {
+        var descriptionEl = document.getElementById('input-description');
+        var descriptionText = descriptionEl ? descriptionEl.value.trim() : '';
+        story.description = descriptionText || 'Additional context and details for this user story.';
+      }
+      
+      if (selectedFields.criteria) {
+        var criteriaEl = document.getElementById('input-criteria');
+        var criteriaText = criteriaEl ? criteriaEl.value.trim() : '';
+        story.acceptanceCriteria = criteriaText ? criteriaText.split('\n').filter(function(line) { return line.trim(); }) : [
+          'Given I am on the relevant page, when I perform the action, then the expected result occurs',
+          'Given I have the necessary permissions, when I access the feature, then I can use it successfully',
+          'Given invalid input is provided, when I submit, then appropriate error messages are displayed'
+        ];
+      }
+      
+      if (selectedFields.points) {
+        var pointsEl = document.getElementById('input-points');
+        var pointsValue = pointsEl ? pointsEl.value : '';
+        story.points = pointsValue ? parseInt(pointsValue) : [1, 2, 3, 5, 8][Math.floor(Math.random() * 5)];
+      }
+      
+      if (selectedFields.dod) {
+        var dodEl = document.getElementById('input-dod');
+        var dodText = dodEl ? dodEl.value.trim() : '';
+        story.definitionOfDone = dodText ? dodText.split('\n').filter(function(line) { return line.trim(); }) : [
+          'Code is written and peer reviewed',
+          'Unit tests are written and passing',
+          'Feature is tested in development environment',
+          'Documentation is updated'
+        ];
+      }
+      
+      if (selectedFields.epic) {
+        var epicEl = document.getElementById('input-epic');
+        var epicValue = epicEl ? epicEl.value.trim() : '';
+        story.epic = epicValue || 'User Management';
+      }
+      
+      if (selectedFields.technical) {
+        var technicalEl = document.getElementById('input-technical');
+        var technicalText = technicalEl ? technicalEl.value.trim() : '';
+        story.technicalNotes = technicalText ? technicalText.split('\n').filter(function(line) { return line.trim(); }) : [
+          'Implement using existing system patterns',
+          'Follow security best practices'
+        ];
+      }
+      
+      if (selectedFields.dependencies) {
+        var depsEl = document.getElementById('input-dependencies');
+        var depsText = depsEl ? depsEl.value.trim() : '';
+        story.dependencies = depsText ? depsText.split('\n').filter(function(line) { return line.trim(); }) : ['Database schema updates', 'API endpoints'];
+      }
+      
+      if (selectedFields.priority) {
+        var priorityEl = document.getElementById('input-priority');
+        var priorityValue = priorityEl ? priorityEl.value : '';
+        story.priority = priorityValue || 'Medium';
+      }
+      
+      return story;
+    }
+    
+    function detectActor(text) {
+      var lowerText = text.toLowerCase();
+      
+      var actorKeywords = {
+        'admin': ['admin', 'administrator', 'system admin', 'sys admin'],
+        'user': ['user', 'end user', 'customer', 'client'],
+        'manager': ['manager', 'supervisor', 'lead'],
+        'developer': ['developer', 'programmer', 'engineer'],
+        'guest': ['visitor', 'guest', 'anonymous'],
+        'analyst': ['analyst', 'business analyst'],
+        'operator': ['operator', 'technician']
+      };
+      
+      for (var actor in actorKeywords) {
+        for (var i = 0; i < actorKeywords[actor].length; i++) {
+          if (lowerText.includes(actorKeywords[actor][i])) {
+            return actor;
+          }
+        }
+      }
+      
+      return 'user';
+    }
+    
+    function extractAction(text) {
+      var cleaned = text.toLowerCase()
+        .replace(/the system shall|shall|must|will|should|allow|enable|provide|support/gi, '')
+        .replace(/administrator|admin|user|customer|manager|visitor/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (cleaned.startsWith('to ')) {
+        cleaned = cleaned.substring(3);
+      }
+      
+      var commonVerbs = ['login', 'log in', 'reset', 'view', 'create', 'delete', 'update', 'edit', 'search', 
+                        'export', 'import', 'download', 'upload', 'manage', 'configure', 'access'];
+      
+      for (var i = 0; i < commonVerbs.length; i++) {
+        if (cleaned.includes(commonVerbs[i])) {
+          var verbIndex = cleaned.indexOf(commonVerbs[i]);
+          cleaned = cleaned.substring(verbIndex);
+          break;
+        }
+      }
+      
+      if (cleaned.length > 70) {
+        cleaned = cleaned.substring(0, 67) + '...';
+      }
+      
+      return cleaned;
+    }
+    
+    function getBenefit(action) {
+      var lowerAction = action.toLowerCase();
+      
+      var benefitMap = {
+        'login': 'access my account securely',
+        'log in': 'access my account securely',
+        'reset password': 'regain access to my account',
+        'password': 'maintain account security',
+        'view history': 'track my past activity',
+        'view': 'see relevant information',
+        'create': 'add new information to the system',
+        'delete': 'remove unwanted items',
+        'update': 'keep information current',
+        'edit': 'modify existing information',
+        'search': 'find what I need quickly',
+        'export': 'use data in other tools',
+        'import': 'bring in external data',
+        'download': 'save information locally',
+        'upload': 'share my files',
+        'manage': 'control and organize efficiently',
+        'configure': 'customize settings to my needs',
+        'register': 'start using the system',
+        'profile': 'maintain my personal information',
+        'dashboard': 'see an overview of my data',
+        'report': 'analyze important metrics',
+        'notification': 'stay informed of updates',
+        'filter': 'focus on relevant items',
+        'sort': 'organize information effectively',
+        'authenticate': 'verify my identity',
+        'authorize': 'control access appropriately',
+        'backup': 'protect my data',
+        'restore': 'recover lost information',
+        'analytics': 'gain insights from data',
+        'payment': 'complete transactions securely',
+        'checkout': 'finalize my purchase',
+        'cart': 'review items before buying'
+      };
+      
+      for (var key in benefitMap) {
+        if (lowerAction.includes(key)) {
+          return benefitMap[key];
+        }
+      }
+      
+      return 'accomplish my task effectively';
+    }
+    
+    function generateUserStory(requirementText) {
+      var actor = detectActor(requirementText);
+      var action = extractAction(requirementText);
+      var benefit = getBenefit(action);
+      
+      var storyText = '';
+      
+      switch (appState.selectedTemplate) {
+        case 'classic':
+          storyText = 'As a ' + actor + ', I want to ' + action + ' so that I can ' + benefit + '.';
+          break;
+        case 'job-stories':
+          storyText = "When I'm using the system, I want to " + action + ', so I can ' + benefit + '.';
+          break;
+        case 'feature-driven':
+          storyText = 'In order to ' + benefit + ', as a ' + actor + ', I want to ' + action + '.';
+          break;
+        case 'simple':
+          storyText = actor.charAt(0).toUpperCase() + actor.slice(1) + 's need to ' + action + ' to ' + benefit + '.';
+          break;
+        default:
+          storyText = 'As a ' + actor + ', I want to ' + action + ' so that I can ' + benefit + '.';
+          break;
+      }
+      
+      return storyText;
+    }
+    
+    function clearAll() {
+      document.getElementById('requirements').value = '';
+      
+      var attributeCheckboxes = document.querySelectorAll('.field-input.show');
+      attributeCheckboxes.forEach(function(input) {
+        input.classList.remove('show');
+      });
+      
+      document.querySelectorAll('input[type="checkbox"]:not(#field-story)').forEach(function(cb) {
+        cb.checked = false;
+      });
+      
+      document.querySelectorAll('.field-input input, .field-input textarea, .field-input select').forEach(function(field) {
+        field.value = '';
+      });
+      
+      showToast('Form cleared', 'success');
+    }
+    
+    function exportFormat(format) {
+      var allStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      
+      if (allStories.length === 0) {
+        showToast('No stories in library to export', 'error');
+        return;
+      }
+      
+      var content = '';
+      var filename = '';
+      
+      switch (format) {
+        case 'jira':
+          content = exportToJira(allStories);
+          filename = 'user-stories-jira.csv';
+          break;
+        case 'azure':
+          content = exportToAzure(allStories);
+          filename = 'user-stories-azure.csv';
+          break;
+        case 'markdown':
+          content = exportToMarkdown(allStories);
+          filename = 'user-stories.md';
+          break;
+        case 'json':
+          content = JSON.stringify(allStories, null, 2);
+          filename = 'user-stories.json';
+          break;
+      }
+      
+      downloadFile(filename, content);
+      showToast('Exported ' + allStories.length + ' stories to ' + format.toUpperCase(), 'success');
+    }
+    
+    function exportToJira(stories) {
+      var csv = 'Summary,Issue Type,Story Points,Description,Acceptance Criteria\n';
+      stories.forEach(function(story) {
+        var summary = (story.title || story.userStory).replace(/"/g, '""');
+        var description = story.userStory;
+        if (story.description) {
+          description += '\n\n' + story.description;
+        }
+        description = description.replace(/"/g, '""');
+        var criteria = story.acceptanceCriteria ? story.acceptanceCriteria.join('\n') : '';
+        criteria = criteria.replace(/"/g, '""');
+        var points = story.points || '';
+        csv += '"' + summary + '","Story","' + points + '","' + description + '","' + criteria + '"\n';
+      });
+      return csv;
+    }
+    
+    function exportToAzure(stories) {
+      var csv = 'Work Item Type,Title,Description,Story Points,Acceptance Criteria\n';
+      stories.forEach(function(story) {
+        var title = (story.title || story.userStory).replace(/"/g, '""');
+        var description = story.userStory;
+        if (story.description) {
+          description += '\n\n' + story.description;
+        }
+        description = description.replace(/"/g, '""');
+        var criteria = story.acceptanceCriteria ? story.acceptanceCriteria.join('; ') : '';
+        criteria = criteria.replace(/"/g, '""');
+        var points = story.points || '';
+        csv += '"User Story","' + title + '","' + description + '","' + points + '","' + criteria + '"\n';
+      });
+      return csv;
+    }
+    
+    function exportToMarkdown(stories) {
+      var projectName = document.getElementById('project-name').value;
+      var md = '# User Stories - ' + projectName + '\n\n';
+      md += '**Generated:** ' + new Date().toLocaleDateString() + '\n';
+      md += '**Template:** ' + getTemplateDisplayName() + '\n';
+      md += '**Total Stories:** ' + stories.length + '\n\n';
+      
+      stories.forEach(function(story) {
+        md += '## ' + story.id;
+        if (story.title) {
+          md += ' - ' + story.title;
+        }
+        md += '\n\n';
+        md += '**User Story:** ' + story.userStory + '\n\n';
+        
+        if (story.epic) {
+          md += '**Epic:** ' + story.epic + '\n\n';
+        }
+        if (story.priority) {
+          md += '**Priority:** ' + story.priority + '\n\n';
+        }
+        if (story.points) {
+          md += '**Story Points:** ' + story.points + '\n\n';
+        }
+        if (story.description) {
+          md += '**Description:** ' + story.description + '\n\n';
+        }
+        if (story.acceptanceCriteria) {
+          md += '**Acceptance Criteria:**\n';
+          story.acceptanceCriteria.forEach(function(criterion) {
+            md += '- ' + criterion + '\n';
+          });
+          md += '\n';
+        }
+        if (story.definitionOfDone) {
+          md += '**Definition of Done:**\n';
+          story.definitionOfDone.forEach(function(item) {
+            md += '- ' + item + '\n';
+          });
+          md += '\n';
+        }
+        if (story.dependencies) {
+          md += '**Dependencies:**\n';
+          story.dependencies.forEach(function(dep) {
+            md += '- ' + dep + '\n';
+          });
+          md += '\n';
+        }
+        if (story.technicalNotes) {
+          md += '**Technical Notes:**\n';
+          story.technicalNotes.forEach(function(note) {
+            md += '- ' + note + '\n';
+          });
+          md += '\n';
+        }
+        md += '---\n\n';
+      });
+      
+      return md;
+    }
+    
+    function downloadFile(filename, content) {
+      var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    function toggleLibrary() {
+      var librarySection = document.getElementById('librarySection');
+      if (librarySection.style.display === 'none') {
+        librarySection.style.display = 'block';
+        loadLibraryStories();
+        setTimeout(function() {
+          librarySection.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        showToast('Opening library...', 'success');
+      } else {
+        librarySection.style.display = 'none';
+        showToast('Library closed', 'success');
+      }
+    }
+    
+    function addNewUserStory() {
+      var librarySection = document.getElementById('librarySection');
+      if (librarySection.style.display !== 'none') {
+        librarySection.style.display = 'none';
+      }
+      
+      document.querySelector('.template-system').style.display = 'block';
+      var formSections = document.querySelectorAll('.form-section');
+      formSections[0].style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Ready to create new story!', 'success');
+    }
+    
+    function loadStoryToWorkspace(uniqueId) {
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var story = savedStories.find(function(s) { return s.uniqueId == uniqueId; });
+      
+      if (!story) {
+        alert('Story not found');
+        return;
+      }
+      
+      window.currentStoryId = uniqueId;
+      
+      var workspace = document.getElementById('storyWorkspace');
+      var workspaceHTML = '';
+      
+      workspaceHTML += '<div style="background: linear-gradient(135deg, #16213e, #0f3460); padding: 20px; border-radius: 12px 12px 0 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px;">';
+      workspaceHTML += '<div style="font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">' + story.id + '</div>';
+      if (story.selectedFields.points && story.points) {
+        workspaceHTML += '<div style="display: inline-block; background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px;">Points: ' + story.points + '</div>';
+      }
+      workspaceHTML += '</div>';
+      
+      workspaceHTML += '<div style="padding: 0 20px 20px 20px; line-height: 1.6; overflow-y: auto; max-height: 500px;">';
+      
+      if (story.selectedFields.title && story.title) {
+        workspaceHTML += '<h3 style="color: #1e293b; margin-bottom: 15px; font-size: 18px; font-weight: 700;">' + story.title + '</h3>';
+      }
+      
+      if (story.selectedFields.epic && story.epic) {
+        workspaceHTML += '<h4 style="color: #64748b; margin-bottom: 10px; font-size: 14px; font-weight: 600;">Epic: ' + story.epic + '</h4>';
+      }
+      
+      workspaceHTML += '<p style="margin-bottom: 15px; color: #374151; font-size: 15px;"><strong>User Story:</strong><br>' + story.userStory + '</p>';
+      
+      if (story.selectedFields.description && story.description) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Description:</h4>';
+        workspaceHTML += '<p style="margin-bottom: 15px; color: #4b5563;">' + story.description + '</p>';
+      }
+      
+      if (story.selectedFields.criteria && story.acceptanceCriteria) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Acceptance Criteria:</h4><ul style="margin-left: 20px; margin-bottom: 15px;">';
+        story.acceptanceCriteria.forEach(function(criterion) {
+          workspaceHTML += '<li style="margin-bottom: 8px; color: #4b5563;">' + criterion + '</li>';
+        });
+        workspaceHTML += '</ul>';
+      }
+      
+      if (story.selectedFields.dod && story.definitionOfDone) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Definition of Done:</h4><ul style="margin-left: 20px; margin-bottom: 15px;">';
+        story.definitionOfDone.forEach(function(item) {
+          workspaceHTML += '<li style="margin-bottom: 8px; color: #4b5563;">' + item + '</li>';
+        });
+        workspaceHTML += '</ul>';
+      }
+      
+      if (story.selectedFields.dependencies && story.dependencies) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Dependencies:</h4><ul style="margin-left: 20px; margin-bottom: 15px;">';
+        story.dependencies.forEach(function(dep) {
+          workspaceHTML += '<li style="margin-bottom: 8px; color: #4b5563;">' + dep + '</li>';
+        });
+        workspaceHTML += '</ul>';
+      }
+      
+      if (story.selectedFields.technical && story.technicalNotes) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Technical Notes:</h4><ul style="margin-left: 20px; margin-bottom: 15px;">';
+        story.technicalNotes.forEach(function(note) {
+          workspaceHTML += '<li style="margin-bottom: 8px; color: #4b5563;">' + note + '</li>';
+        });
+        workspaceHTML += '</ul>';
+      }
+      
+      if (story.selectedFields.priority && story.priority) {
+        workspaceHTML += '<h4 style="color: #1e293b; margin-bottom: 10px; font-size: 16px; font-weight: 700;">Priority:</h4>';
+        workspaceHTML += '<p style="margin-bottom: 15px; color: #374151;"><strong>' + story.priority + '</strong></p>';
+      }
+      
+      workspaceHTML += '</div>';
+      
+      workspace.innerHTML = workspaceHTML;
+    }
+    
+    function copyStoryToClipboard(uniqueId) {
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var story = savedStories.find(function(s) { return s.uniqueId == uniqueId; });
+      
+      if (!story) return;
+      
+      var storyText = story.id + '\n\n';
+      
+      if (story.title) {
+        storyText += 'Title: ' + story.title + '\n\n';
+      }
+      
+      if (story.epic) {
+        storyText += 'Epic: ' + story.epic + '\n\n';
+      }
+      
+      storyText += 'User Story:\n' + story.userStory + '\n\n';
+      
+      if (story.description) {
+        storyText += 'Description:\n' + story.description + '\n\n';
+      }
+      
+      if (story.selectedFields.criteria && story.acceptanceCriteria) {
+        storyText += 'Acceptance Criteria:\n';
+        story.acceptanceCriteria.forEach(function(c) { storyText += '- ' + c + '\n'; });
+        storyText += '\n';
+      }
+      
+      if (story.selectedFields.dod && story.definitionOfDone) {
+        storyText += 'Definition of Done:\n';
+        story.definitionOfDone.forEach(function(d) { storyText += '- ' + d + '\n'; });
+        storyText += '\n';
+      }
+      
+      if (story.selectedFields.dependencies && story.dependencies) {
+        storyText += 'Dependencies:\n';
+        story.dependencies.forEach(function(dep) { storyText += '- ' + dep + '\n'; });
+        storyText += '\n';
+      }
+      
+      if (story.selectedFields.technical && story.technicalNotes) {
+        storyText += 'Technical Notes:\n';
+        story.technicalNotes.forEach(function(note) { storyText += '- ' + note + '\n'; });
+        storyText += '\n';
+      }
+      
+      if (story.selectedFields.priority && story.priority) {
+        storyText += 'Priority: ' + story.priority + '\n\n';
+      }
+      
+      if (story.selectedFields.points && story.points) {
+        storyText += 'Story Points: ' + story.points + '\n\n';
+      }
+      
+      navigator.clipboard.writeText(storyText).then(function() {
+        showToast('Story copied to clipboard!', 'success');
+      });
+    }
+    
+    function copyStory() {
+      if (!window.currentStoryId) {
+        alert('No story selected');
+        return;
+      }
+      copyStoryToClipboard(window.currentStoryId);
+    }
+    
+    function editStory() {
+      if (!window.currentStoryId) {
+        alert('No story selected');
+        return;
+      }
+      
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var story = savedStories.find(function(s) { return s.uniqueId == window.currentStoryId; });
+      
+      if (!story) {
+        alert('Story not found');
+        return;
+      }
+      
+      window.editMode = true;
+      
+      var workspace = document.getElementById('storyWorkspace');
+      var editHTML = '';
+      
+      editHTML += '<div style="background: linear-gradient(135deg, #fff3cd, #ffeaa7); padding: 20px; border-radius: 12px 12px 0 0; border-bottom: 2px solid #f59e0b; margin-bottom: 20px;">';
+      editHTML += '<div style="font-size: 18px; font-weight: 700; color: #92400e; margin-bottom: 8px;">EDIT MODE</div>';
+      editHTML += '<div style="font-size: 13px; color: #78350f;">Make your changes below, then click Save</div>';
+      editHTML += '</div>';
+      
+      editHTML += '<div style="padding: 0 20px 20px 20px; overflow-y: auto; max-height: 500px;">';
+      
+      editHTML += '<div style="margin-bottom: 20px;">';
+      editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Story ID:</label>';
+      editHTML += '<input type="text" id="edit-id" value="' + story.id + '" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0;">';
+      editHTML += '</div>';
+      
+      editHTML += '<div style="margin-bottom: 20px;">';
+      editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">User Story:</label>';
+      editHTML += '<textarea id="edit-userStory" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 80px;">' + story.userStory + '</textarea>';
+      editHTML += '</div>';
+      
+      if (story.selectedFields.title) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Title/Summary:</label>';
+        editHTML += '<input type="text" id="edit-title" value="' + (story.title || '') + '" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0;">';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.epic) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Epic:</label>';
+        editHTML += '<input type="text" id="edit-epic" value="' + (story.epic || '') + '" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0;">';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.priority) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Priority:</label>';
+        editHTML += '<select id="edit-priority" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0;">';
+        var priorities = ['Critical', 'High', 'Medium', 'Low'];
+        priorities.forEach(function(p) {
+          editHTML += '<option value="' + p + '"' + (story.priority == p ? ' selected' : '') + '>' + p + '</option>';
+        });
+        editHTML += '</select>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.points) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Story Points:</label>';
+        editHTML += '<select id="edit-points" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0;">';
+        var pointOptions = [1, 2, 3, 5, 8, 13];
+        pointOptions.forEach(function(p) {
+          editHTML += '<option value="' + p + '"' + (story.points == p ? ' selected' : '') + '>' + p + '</option>';
+        });
+        editHTML += '</select>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.description) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Description:</label>';
+        editHTML += '<textarea id="edit-description" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 100px;">' + (story.description || '') + '</textarea>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.criteria) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Acceptance Criteria (one per line):</label>';
+        editHTML += '<textarea id="edit-acceptanceCriteria" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 100px;">' + (story.acceptanceCriteria ? story.acceptanceCriteria.join('\n') : '') + '</textarea>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.dod) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Definition of Done (one per line):</label>';
+        editHTML += '<textarea id="edit-definitionOfDone" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 100px;">' + (story.definitionOfDone ? story.definitionOfDone.join('\n') : '') + '</textarea>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.dependencies) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Dependencies (one per line):</label>';
+        editHTML += '<textarea id="edit-dependencies" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 80px;">' + (story.dependencies ? story.dependencies.join('\n') : '') + '</textarea>';
+        editHTML += '</div>';
+      }
+      
+      if (story.selectedFields.technical) {
+        editHTML += '<div style="margin-bottom: 20px;">';
+        editHTML += '<label style="display: block; font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 14px;">Technical Notes (one per line):</label>';
+        editHTML += '<textarea id="edit-technicalNotes" style="width: 100%; padding: 12px; border: 2px solid #1a4d7a; border-radius: 8px; font-size: 14px; background: #16213e; color: #e2e8f0; font-family: inherit; min-height: 80px;">' + (story.technicalNotes ? story.technicalNotes.join('\n') : '') + '</textarea>';
+        editHTML += '</div>';
+      }
+      
+      editHTML += '</div>';
+      
+      workspace.innerHTML = editHTML;
+      showToast('Edit mode activated', 'success');
+    }
+    
+    function exportStoryFromWorkspace() {
+      if (!window.currentStoryId) {
+        alert('No story selected');
+        return;
+      }
+      exportStory(window.currentStoryId);
+    }
+    
+    function saveStory() {
+      if (!window.currentStoryId) {
+        alert('No story selected');
+        return;
+      }
+      
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var storyIndex = savedStories.findIndex(function(s) { return s.uniqueId == window.currentStoryId; });
+      
+      if (storyIndex === -1) {
+        alert('Story not found in library');
+        return;
+      }
+      
+      var story = savedStories[storyIndex];
+      
+      var editId = document.getElementById('edit-id');
+      if (editId) {
+        story.id = editId.value.trim();
+      }
+      
+      var editUserStory = document.getElementById('edit-userStory');
+      if (editUserStory) {
+        story.userStory = editUserStory.value.trim();
+      }
+      
+      if (story.selectedFields.title) {
+        var editTitle = document.getElementById('edit-title');
+        if (editTitle) {
+          story.title = editTitle.value.trim();
+        }
+      }
+      
+      if (story.selectedFields.epic) {
+        var editEpic = document.getElementById('edit-epic');
+        if (editEpic) {
+          story.epic = editEpic.value.trim();
+        }
+      }
+      
+      if (story.selectedFields.priority) {
+        var editPriority = document.getElementById('edit-priority');
+        if (editPriority) {
+          story.priority = editPriority.value;
+        }
+      }
+      
+      if (story.selectedFields.points) {
+        var editPoints = document.getElementById('edit-points');
+        if (editPoints) {
+          story.points = parseInt(editPoints.value);
+        }
+      }
+      
+      if (story.selectedFields.description) {
+        var editDescription = document.getElementById('edit-description');
+        if (editDescription) {
+          story.description = editDescription.value.trim();
+        }
+      }
+      
+      if (story.selectedFields.criteria) {
+        var editCriteria = document.getElementById('edit-acceptanceCriteria');
+        if (editCriteria) {
+          var criteriaText = editCriteria.value.trim();
+          story.acceptanceCriteria = criteriaText ? criteriaText.split('\n').filter(function(line) { return line.trim(); }) : [];
+        }
+      }
+      
+      if (story.selectedFields.dod) {
+        var editDod = document.getElementById('edit-definitionOfDone');
+        if (editDod) {
+          var dodText = editDod.value.trim();
+          story.definitionOfDone = dodText ? dodText.split('\n').filter(function(line) { return line.trim(); }) : [];
+        }
+      }
+      
+      if (story.selectedFields.dependencies) {
+        var editDeps = document.getElementById('edit-dependencies');
+        if (editDeps) {
+          var depsText = editDeps.value.trim();
+          story.dependencies = depsText ? depsText.split('\n').filter(function(line) { return line.trim(); }) : [];
+        }
+      }
+      
+      if (story.selectedFields.technical) {
+        var editTech = document.getElementById('edit-technicalNotes');
+        if (editTech) {
+          var techText = editTech.value.trim();
+          story.technicalNotes = techText ? techText.split('\n').filter(function(line) { return line.trim(); }) : [];
+        }
+      }
+      
+      savedStories[storyIndex] = story;
+      localStorage.setItem('usb_stories', JSON.stringify(savedStories));
+      
+      window.editMode = false;
+      loadLibraryStories();
+      loadStoryToWorkspace(window.currentStoryId);
+      
+      showToast('Story saved successfully!', 'success');
+    }
+    
+    function exportStory(uniqueId) {
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var story = savedStories.find(function(s) { return s.uniqueId == uniqueId; });
+      
+      if (!story) return;
+      
+      var storyText = story.id + '\n\n';
+      
+      if (story.title) {
+        storyText += 'Title: ' + story.title + '\n\n';
+      }
+      
+      if (story.epic) {
+        storyText += 'Epic: ' + story.epic + '\n\n';
+      }
+      
+      storyText += 'User Story:\n' + story.userStory + '\n\n';
+      
+      if (story.description) {
+        storyText += 'Description:\n' + story.description + '\n\n';
+      }
+      
+      if (story.selectedFields.criteria && story.acceptanceCriteria) {
+        storyText += 'Acceptance Criteria:\n';
+        story.acceptanceCriteria.forEach(function(c) { storyText += '- ' + c + '\n'; });
+        storyText += '\n';
+      }
+      
+      if (story.selectedFields.dod && story.definitionOfDone) {
+        storyText += 'Definition of Done:\n';
+        story.definitionOfDone.forEach(function(d) { storyText += '- ' + d + '\n'; });
+      }
+      
+      var filename = story.id + '-user-story.txt';
+      downloadFile(filename, storyText);
+      showToast('Story exported!', 'success');
+    }
+    
+    function deleteStory(uniqueId) {
+      if (!confirm('Are you sure you want to delete this story?')) return;
+      
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var filtered = savedStories.filter(function(s) { return s.uniqueId != parseInt(uniqueId); });
+      
+      localStorage.setItem('usb_stories', JSON.stringify(filtered));
+      showToast('Story deleted!', 'success');
+      loadLibraryStories();
+    }
+    
+    function deleteSelectedStories() {
+      var checkboxes = document.querySelectorAll('.story-checkbox:checked');
+      var selectedIds = Array.from(checkboxes).map(function(cb) { return cb.dataset.storyId; });
+      if (selectedIds.length === 0) {
+        return;
+      }
+      
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var remaining = savedStories.filter(function(s) { 
+        return !selectedIds.includes(s.uniqueId.toString());
+      });
+      
+      localStorage.setItem('usb_stories', JSON.stringify(remaining));
+      loadLibraryStories();
+      showToast('Stories deleted!', 'success');
+    }
+    
+    function loadLibraryStories(searchTerm) {
+      var savedStories = JSON.parse(localStorage.getItem('usb_stories') || '[]');
+      var libraryContent = document.getElementById('libraryContent');
+      
+      if (savedStories.length === 0) {
+        libraryContent.innerHTML = '<div style="padding: 60px; text-align: center; color: #64748b;"><svg style="width: 64px; height: 64px; stroke: #cbd5e1; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 20px;" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><h4 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #374151;">No Stories Yet</h4><p style="font-size: 14px;">Generate some user stories to see them here.</p></div>';
+        return;
+      }
+      
+      var filteredStories = savedStories;
+      if (searchTerm && searchTerm.trim()) {
+        var search = searchTerm.toLowerCase();
+        filteredStories = savedStories.filter(function(story) {
+          return (story.id && story.id.toLowerCase().includes(search)) ||
+                 (story.title && story.title.toLowerCase().includes(search)) ||
+                 (story.userStory && story.userStory.toLowerCase().includes(search)) ||
+                 (story.epic && story.epic.toLowerCase().includes(search)) ||
+                 (story.description && story.description.toLowerCase().includes(search));
+        });
+      }
+      
+      var layoutHTML = '<div style="display: grid; grid-template-columns: 35% 65%; min-height: 600px; border-top: 1px solid #e2e8f0;">';
+      
+      layoutHTML += '<div style="padding: 24px; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden;">';
+      layoutHTML += '<div style="margin-bottom: 16px;"><input type="text" id="librarySearchBox" placeholder="Search stories..." value="' + (searchTerm || '') + '" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;"></div>';
+      layoutHTML += '<button onclick="deleteSelectedStories()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">';
+      layoutHTML += '<svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"></polyline><path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path></svg>';
+      layoutHTML += 'Delete Selected</button>';
+      layoutHTML += '<div style="overflow-y: auto; flex: 1;">';
+      
+      if (filteredStories.length === 0) {
+        layoutHTML += '<div style="padding: 40px 20px; text-align: center; color: #64748b;"><p>No stories match your search.</p></div>';
+      } else {
+        filteredStories.forEach(function(story) {
+          layoutHTML += '<div onclick="loadStoryToWorkspace(\'' + story.uniqueId + '\')" style="display: flex; align-items: center; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; background: white; cursor: pointer; transition: all 0.2s;">';
+          layoutHTML += '<input type="checkbox" class="story-checkbox" data-story-id="' + story.uniqueId + '" onclick="event.stopPropagation()" style="margin-right: 12px; width: 18px; height: 18px; accent-color: #dc2626;">';
+          layoutHTML += '<div style="flex: 1;">';
+          layoutHTML += '<div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">' + story.id + '</div>';
+          layoutHTML += '<div style="font-size: 12px; color: #64748b;">' + story.created + '</div>';
+          layoutHTML += '</div>';
+          layoutHTML += '</div>';
+        });
+      }
+      
+      layoutHTML += '</div>';
+      layoutHTML += '</div>';
+      
+      layoutHTML += '<div style="padding: 24px; display: flex; flex-direction: column; overflow: hidden;">';
+      
+      layoutHTML += '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">';
+      layoutHTML += '<button class="action-btn" onclick="copyStory()" style="flex: 1; min-width: 100px; padding: 12px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: 2px solid #667eea; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.3s;">';
+      layoutHTML += '<svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+      layoutHTML += 'Copy</button>';
+      
+      layoutHTML += '<button class="action-btn" onclick="editStory()" style="flex: 1; min-width: 100px; padding: 12px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: 2px solid #667eea; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.3s;">';
+      layoutHTML += '<svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+      layoutHTML += 'Edit</button>';
+      
+      layoutHTML += '<button class="action-btn" onclick="exportStoryFromWorkspace()" style="flex: 1; min-width: 100px; padding: 12px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: 2px solid #667eea; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.3s;">';
+      layoutHTML += '<svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
+      layoutHTML += 'Export</button>';
+      
+      layoutHTML += '<button class="action-btn" onclick="saveStory()" style="flex: 1; min-width: 100px; padding: 12px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: 2px solid #667eea; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.3s;">';
+      layoutHTML += '<svg style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>';
+      layoutHTML += 'Save</button>';
+      layoutHTML += '</div>';
+      
+      layoutHTML += '<div id="storyWorkspace">';
+      layoutHTML += '<div style="text-align: center; padding: 60px; color: #64748b;">';
+      layoutHTML += '<svg style="width: 64px; height: 64px; stroke: #cbd5e1; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 20px;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+      layoutHTML += '<h4 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #374151;">No Story Selected</h4>';
+      layoutHTML += '<p style="font-size: 14px;">Click a story from the list to view it here.</p>';
+      layoutHTML += '</div>';
+      layoutHTML += '</div>';
+      layoutHTML += '</div>';
+      
+      layoutHTML += '</div>';
+      
+      libraryContent.innerHTML = layoutHTML;
+      
+      var searchBox = document.getElementById('librarySearchBox');
+      if (searchBox) {
+        searchBox.addEventListener('input', function(e) {
+          loadLibraryStories(e.target.value);
+        });
+      }
+    }
+    
+    function showToast(message, type) {
+      var existingToast = document.querySelector('.toast');
+      if (existingToast) {
+        existingToast.remove();
+      }
+      
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(function() {
+        toast.classList.add('show');
+      }, 100);
+      
+      setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() {
+          if (toast.parentNode) {
+            toast.remove();
+          }
+        }, 300);
+      }, 3000);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      var projectNameField = document.getElementById('project-name');
+      if (projectNameField) {
+        projectNameField.focus();
+      }
+      setTimeout(function() {
+        showToast('StoryCap - User Story Builder ready!', 'success');
+      }, 500);
+    });
+  </script>
+</body>
+</html>

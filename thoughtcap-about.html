@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About ThoughtCap Apps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #000000 0%, #1a0f00 40%, #4a2500 70%, #cc6600 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 60px 50px;
+            color: white;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            transition: all 0.3s;
+            z-index: 2;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: rgba(255, 160, 122, 0.9);
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+            
+            .footer-pills {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        .footer-pills {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .footer-pill {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-pill:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <a href="thoughtcap-landing.html" class="back-link">← Back</a>
+    
+    <div class="content">
+        <h1>Why ThoughtCap Apps Exists</h1>
+        
+        <p>I built ThoughtCap Apps after years of working government and corporate contracts as a remote consultant. Every time a project ended, I faced the same problem: immediate loss of access to everything I'd created.</p>
+
+        <p>I'm not talking about taking client data or proprietary information. That stays with them, as it should. I'm talking about the work that happens before something becomes part of the client's system. The curation process. The iterative drafting. The templates you develop. The prompt frameworks you refine. That intellectual work, your process, should be yours.</p>
+
+        <h2>The Problem I Kept Running Into</h2>
+
+        <p>When you create user stories, requirements documents, or project artifacts directly in a client's system, you lose more than just access when the contract ends. You lose the evolution of your thinking. The templates you spent hours perfecting. The approaches you developed through trial and error.</p>
+
+        <p>I've been there too many times. I'd finish a project with solid work behind me, but I couldn't reference my own process for the next engagement. Why? Because I only saved final deliverables in systems I no longer could access. The creation process was gone.</p>
+
+        <h2>What I Built to Fix It</h2>
+
+        <p>ThoughtCap Apps keeps your curation process local and private. You develop your prompts, extract your requirements, refine your user stories on your own machine. Then you upload the finished work to the client's systems. Your intellectual property, the way you think, the frameworks you use, stays with you.</p>
+
+        <h2>Who This Is For</h2>
+
+        <p>Remote workers and consultants who need to protect two things. First, client work, by keeping sensitive pre-work local instead of in chat systems or public AI tools. Second, your intellectual property, the process, templates, and approaches you've developed over your career.</p>
+
+        <p>ThoughtCap Apps isn't about circumventing client agreements or taking proprietary information. It's about recognizing that the work you do to create deliverables is separate from the deliverables themselves. That process should remain yours.</p>
+        
+        <div class="footer-pills">
+            <a href="thoughtcap-landing.html" class="footer-pill">About ThoughtCap Apps</a>
+            <a href="mailto:feedback@weej.app" class="footer-pill">feedback@weej.app</a>
+            <span class="footer-pill">Free • No signup required</span>
+        </div>
+    </div>
+</body>
+</html>

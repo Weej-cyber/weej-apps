@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThoughtCap - Professional Prompt Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);min-height:100vh;padding:20px;color:#e2e8f0;line-height:1.6;font-size:16px}
+.page-wrapper{max-width:1200px;margin:0 auto;padding:0;background:rgba(26,26,46,0.95);border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,0.3);overflow:hidden}
+.header{background:linear-gradient(135deg, #1a1a1a, #333333);padding:8px 20px;border-bottom:3px solid #dc2626;min-height:60px}
+.new-logo{width:100%;max-width:650px;height:auto;margin:0 auto;display:block}
+.container{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:0}
+.card{background:#0f3460!important;backdrop-filter:blur(10px)!important;border-radius:0!important;border-top:none!important;border-bottom:none!important;overflow:hidden!important;box-shadow:0 8px 32px rgba(0,0,0,.1)!important;margin:0!important}
+.card:last-child{border-bottom:1px solid rgba(34,197,94,.2)!important;border-radius:0 0 16px 16px!important}
+.copy-success{position:fixed;top:100px;right:20px;background:#10b981;color:#e2e8f0;padding:16px 24px;border-radius:12px;font-size:16px;font-weight:600;z-index:2000;transform:translateX(100%);transition:transform .3s ease;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(16,185,129,.4)}
+.copy-success.show{transform:translateX(0)}
+.copy-success.warning{background:#f59e0b}
+.copy-success.error{background:#ef4444}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:2000;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;pointer-events:none;display:flex}
+.modal-overlay.show{opacity:1;visibility:visible;pointer-events:auto}
+.modal-dialog{background:#0f3460;border-radius:16px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.5);transform:scale(0.9) translateY(-20px);transition:transform .3s ease,opacity .3s ease;opacity:0;border:1px solid rgba(34,197,94,.3)}
+.modal-overlay.show .modal-dialog{transform:scale(1) translateY(0);opacity:1}
+.subsection{}
+.subsection-header{background:#1a1a2e;padding:16px 28px;border-bottom:2px solid #22c55e}
+.subsection-title{color:#e2e8f0;font-family:Impact,'Arial Black',sans-serif;font-size:28px;font-weight:900;letter-spacing:1px;margin:0 0 6px 0;text-align:center;text-shadow:2px 2px 6px rgba(0,0,0,.7)}
+.subsection-description{color:#e2e8f0;font-size:13px;font-weight:500;margin:0;opacity:.9}
+.starter-tabs-container{background:#1a1a2e;padding:20px 24px;position:relative;border-bottom:2px solid #22c55e}
+.starter-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;max-width:900px;margin:0 auto}
+.starter-tab{padding:14px 18px;border:2px solid #22c55e;border-radius:10px;background:#0f3460;color:#e2e8f0;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:90px;text-align:center;position:relative;overflow:hidden;box-shadow:0 3px 12px rgba(34,197,94,.3)}
+.starter-tab svg{width:32px;height:32px}
+.starter-tab:hover{border-color:#22c55e;color:#e2e8f0;background:rgba(34,197,94,.1);transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,.4)}
+.starter-tab.active{background:#22c55e;color:#121212;border-color:#22c55e;box-shadow:0 6px 20px rgba(34,197,94,.6);transform:translateY(-2px)}
+.templates-header{background:#1a1a2e!important;padding:20px 28px;text-align:center;position:relative;border-bottom:2px solid #22c55e}
+.templates-title{color:#e2e8f0!important;font-family:Impact,'Arial Black',sans-serif;font-size:28px;font-weight:900;letter-spacing:1px;text-shadow:2px 2px 6px rgba(0,0,0,.7);margin:0}
+.form-textarea{width:100%;padding:16px 18px;border:2px solid rgba(34,197,94,.3);border-radius:10px;font-size:16px;resize:vertical;transition:all .3s ease;background:#16213e;backdrop-filter:blur(10px);font-family:inherit;color:#e2e8f0}
+.form-textarea.form-select{min-height:60px;resize:none;appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");background-position:right 18px center;background-repeat:no-repeat;background-size:20px;padding-right:50px}
+.form-textarea:focus{outline:none;border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2);background:#0f3460}
+.welcome-state{padding:60px 24px;text-align:center;color:#94a3b8}
+.welcome-icon{font-size:48px;margin-bottom:20px;opacity:.6}
+.welcome-title{font-size:20px;font-weight:700;margin-bottom:8px;color:#e2e8f0}
+.welcome-text{font-size:14px;line-height:1.5}
+.workspace-section{background:#0f3460;backdrop-filter:blur(10px);border-radius:0 0 16px 16px;border:1px solid rgba(34,197,94,.2);border-top:none;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.1);margin-top:0;display:none}
+.workspace-section.show{display:block}
+.workspace-title-container{background:#1a1a2e;padding:20px 28px;text-align:center;position:relative}
+
+.workspace-title{color:#e2e8f0;font-family:Impact,'Arial Black',sans-serif;font-size:28px;font-weight:900;letter-spacing:1px;text-shadow:2px 2px 6px rgba(0,0,0,.7);margin:0}
+.workspace-description{color:#e2e8f0;font-size:14px;font-weight:500;margin-top:8px;opacity:.9}
+.workspace-actions-container{background:#1a1a2e;padding:24px;position:relative}
+.workspace-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;max-width:900px;margin:0 auto}
+.action-btn{padding:14px 18px;border:2px solid #22c55e;border-radius:10px;background:#0f3460;color:#e2e8f0;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:90px;text-align:center;position:relative;overflow:hidden;box-shadow:0 3px 12px rgba(34,197,94,.3)}
+.action-btn.btn-row{flex-direction:row;min-height:auto;padding:10px 14px;gap:4px}
+.action-btn.btn-small{padding:8px;min-height:auto;gap:4px;flex-direction:row}
+.action-btn svg{width:32px;height:32px}
+.action-btn:hover{border-color:#22c55e;color:#e2e8f0;background:rgba(34,197,94,.1);transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,.4)}
+.action-btn.primary{background:#0f3460;color:#e2e8f0;border-color:#22c55e;box-shadow:0 6px 20px rgba(34,197,94,.6)}
+.workspace-content{padding:32px 28px;min-height:200px;background:#1a1a2e}
+.prompt-display{width:100%;min-height:300px;padding:20px;border:2px solid rgba(34,197,94,.3);border-radius:12px;font-size:16px;line-height:1.6;color:#e2e8f0;background:#16213e;backdrop-filter:blur(10px);resize:vertical;white-space:pre-wrap;overflow-y:auto}
+.prompt-display:focus{outline:none;border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2);background:#0f3460}
+.workspace-empty{text-align:center;padding:60px 24px;color:#94a3b8}
+.workspace-empty-icon{font-size:48px;margin-bottom:20px;opacity:.6}
+.workspace-empty-title{font-size:20px;font-weight:700;margin-bottom:8px;color:#e2e8f0}
+.workspace-empty-text{font-size:14px;line-height:1.5}
+.starter-prompt-card{background:#0f3460;border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:16px;cursor:pointer;transition:all .2s}
+.starter-prompt-card:hover{border-color:#22c55e;box-shadow:0 4px 12px rgba(34,197,94,.2);transform:translateY(-1px)}
+.icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+#libraryList{min-height:200px;overflow-y:auto}
+.prompt-item{display:flex;align-items:center;padding:12px;border:1px solid rgba(34,197,94,.3);border-radius:8px;margin-bottom:8px;background:#0f3460;cursor:pointer;transition:all .2s;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.prompt-item:hover{border-color:#22c55e;box-shadow:0 2px 8px rgba(34,197,94,.2)}
+.prompt-item.active{border-color:#22c55e;background:rgba(34,197,94,.1);box-shadow:0 2px 12px rgba(34,197,94,.3);border-width:2px}
+.prompt-checkbox{margin-right:12px}
+.prompt-info{flex:1;cursor:pointer;padding:4px 8px;border-radius:4px;transition:background-color .2s}
+.prompt-info:hover{background-color:rgba(34,197,94,.05)}
+.prompt-title{font-weight:600;color:#e2e8f0}
+.prompt-date{font-size:12px;color:#94a3b8;margin-top:4px}
+.action-btn:active,.starter-tab:active{transform:scale(0.98)!important}
+button{transition:all .2s ease}
+button span,.action-btn span{color:inherit}
+.btn-delete{background:#ef4444;border:none;color:#e2e8f0;font-weight:600;cursor:pointer}
+.btn-delete.btn-row{padding:8px;min-height:auto;gap:4px;flex-direction:row;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.btn-delete.btn-modal{padding:12px 24px;border-radius:8px}
+.btn-small{padding:10px 14px;min-height:auto;gap:4px;flex-direction:row}
+.btn-row{padding:8px;min-height:auto;gap:4px;flex-direction:row}
+.text-muted{color:#94a3b8}
+.text-primary{color:#e2e8f0}
+.text-sm{font-size:12px}
+.text-base{font-size:16px}
+.text-large{font-size:18px;font-weight:700}
+.text-small{font-size:12px}
+.text-medium{font-size:13px}
+.icon-star{color:#fbbf24;font-size:18px}
+.modal-title{font-size:20px;font-weight:700;color:#e2e8f0;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:#e2e8f0;font-size:24px;cursor:pointer}
+.btn-cancel{padding:12px 24px;border:1px solid rgba(34,197,94,.3);background:#0f3460;color:#e2e8f0;border-radius:8px;cursor:pointer}
+.btn-save{padding:12px 24px;border:none;background:#22c55e;color:#121212;border-radius:8px;cursor:pointer;font-weight:600}
+.modal-text{font-size:16px;margin-bottom:24px;color:#e2e8f0;text-align:center}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="copy-success" id="copySuccess">
+    <svg class="icon" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"></polyline></svg>
+    Copied to clipboard!
+  </div>
+
+  <div class="container">
+    <section class="card" id="librarySection">
+      <div class="workspace-title-container" style="padding:4px 24px;background:#1a1a2e;">
+        <svg class="new-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 260" style="width: 100%; max-width: 487px; height: auto; margin: 0 auto; display: block;">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d1d5db"/><stop offset="100%" stop-color="#374151"/>
+            </linearGradient>
+            <filter id="s"><feDropShadow dx="2" dy="2" stdDeviation="4" flood-color="#000" flood-opacity=".7"/></filter>
+          </defs>
+          <g transform="translate(20,20)scale(1.08)" stroke="#22c55e" stroke-width="6" fill="none">
+            <path d="M64 16C44 16,28 32,28 52c0 14,9 26,20 32v10h32v-10c11-6,20-18,20-32C100 32,84 16,64 16Z"/>
+            <path d="M64 56l-10 12M64 56l10 12M64 56v16"/><line x1="46" y1="100" x2="82" y2="100"/>
+            <line x1="48" y1="112" x2="80" y2="112"/><line x1="52" y1="124" x2="76" y2="124"/>
+          </g>
+          <text x="160" y="100" font-family="Impact" font-size="88" font-weight="900" fill="url(#g)" filter="url(#s)">ThoughtCap Prompts</text>
+          <text x="160" y="160" font-family="Impact" font-size="50" font-weight="900" fill="url(#g)" filter="url(#s)">Capture. Think. Use. Validate. Refine.</text>
+        </svg>
+      </div>
+      <div class="workspace-actions-container" style="padding:4px 24px;">
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:900px;margin:0 auto;">
+          <button class="action-btn primary btn-row" onclick="addSinglePrompt()" style="width:100%;padding:12px 14px;">
+            <span style="font-size:24px;font-weight:700;">+</span>
+            <span style="font-size:15px;font-weight:700;">Add Prompt</span>
+          </button>
+          <input type="text" class="form-textarea" id="librarySearch" placeholder="Search prompts..." style="width:100%;min-height:auto;padding:10px 14px;"/>
+        </div>
+        <div style="display:flex;gap:6px;align-items:stretch;max-width:900px;margin:12px auto 0;">
+          <button class="action-btn btn-row" onclick="openQuickGuide()" style="flex:1;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span style="font-size:13px;">Quick Start</span>
+          </button>
+          <button class="action-btn btn-row" onclick="backupLibrary()" style="flex:1;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <span style="font-size:13px;">Backup</span>
+          </button>
+          <button class="action-btn btn-row" onclick="restoreLibrary()" style="flex:1;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,14 12,9 7,14"/><line x1="12" x2="12" y1="9" y2="21"/></svg>
+            <span style="font-size:13px;">Restore</span>
+          </button>
+        </div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:35% 65%; min-height:600px; border-top:1px solid rgba(34,197,94,.3);">
+        <div style="padding:16px; border-right:1px solid rgba(34,197,94,.3); display:flex; flex-direction:column; overflow:hidden;">
+          <button class="action-btn btn-row" id="favoritesFilter" onclick="toggleFavoritesFilter()" style="margin-bottom:12px; flex-shrink:0; transition: all 0.3s ease;">
+            <span class="icon-star">★</span>
+            <span style="font-size:13px;">Favorites</span>
+          </button>
+          <button class="action-btn btn-delete btn-row" id="deleteSelected" style="margin-bottom:16px; flex-shrink:0;">
+            <svg class="icon" viewBox="0 0 24 24" class="icon text-primary" style="width:16px;height:16px;"><polyline points="3,6 5,6 21,6"></polyline><path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+            <span style="font-size:13px;">Delete Selected</span>
+          </button>
+          <div id="libraryList" style="overflow-y:auto; flex:1;"></div>
+        </div>
+        <div style="padding:16px; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap; flex-shrink:0;">
+            <button class="action-btn btn-row" onclick="copyPrompt()">
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span style="font-size:12px;">Copy</span>
+            </button>
+            <button class="action-btn btn-row" onclick="editPrompt()">
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span style="font-size:12px;">Edit</span>
+            </button>
+            <button class="action-btn btn-row" onclick="exportPrompt()">
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              <span style="font-size:12px;">Export</span>
+            </button>
+            <button class="action-btn btn-row" id="updateCurrentBtn" onclick="updateCurrent()" style="opacity:0.5;cursor:not-allowed">
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+              <span style="font-size:12px;">Update Current</span>
+            </button>
+            <button class="action-btn btn-row" onclick="saveAsNew()">
+              <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+              <span style="font-size:12px;">Save As New</span>
+            </button>
+          </div>
+          <div class="prompt-display" id="promptDisplay" contenteditable="true" style="flex:1; overflow-y:auto;">
+            <div class="workspace-empty">
+              <div class="workspace-empty-icon">💭</div>
+              <h3 class="workspace-empty-title">No Prompt Selected</h3>
+              <p class="workspace-empty-text">Click any prompt to view and edit it here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addPromptOverlay">
+  <div class="modal-dialog">
+    <div class="workspace-title-container">
+      <h2 class="workspace-title">ADD NEW PROMPT</h2>
+      <button class="modal-close" onclick="closeAddPromptModal()">&times;</button>
+    </div>
+    <div style="padding:32px">
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-weight:600;margin-bottom:8px">Title *</label>
+        <input type="text" id="newPromptTitle" placeholder="Title..." class="form-textarea" style="min-height:60px;resize:none">
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="display:block;font-weight:600;margin-bottom:8px">Content *</label>
+        <textarea id="newPromptContent" placeholder="Paste prompt..." class="form-textarea" style="height:200px"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="closeAddPromptModal()">Cancel</button>
+        <button onclick="saveNewPrompt()" class="action-btn primary" style="padding:12px 24px;border-radius:8px">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="saveModalOverlay">
+  <div class="modal-dialog">
+    <div class="workspace-title-container">
+      <h2 class="workspace-title">Save Prompt</h2>
+      <button onclick="closeSaveModal()" class="modal-close">&times;</button>
+    </div>
+    <div style="padding:32px">
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-weight:600;margin-bottom:8px">Title *</label>
+        <input type="text" id="saveTitle" placeholder="Title..." class="form-textarea" style="min-height:60px;resize:none">
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="display:block;font-weight:600;margin-bottom:8px">Description</label>
+        <textarea id="saveDescription" placeholder="Optional..." class="form-textarea" style="height:80px"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="closeSaveModal()">Cancel</button>
+        <button class="btn-save" onclick="confirmSave()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exportModalOverlay">
+  <div class="modal-dialog">
+    <div class="workspace-title-container">
+      <h2 class="workspace-title">Export Prompt</h2>
+      <button onclick="closeExportModal()" class="modal-close">&times;</button>
+    </div>
+    <div style="padding:32px">
+      <div style="margin-bottom:24px">
+        <label style="display:block;font-weight:600;margin-bottom:8px">Filename *</label>
+        <input type="text" id="exportFilename" placeholder="my-prompt" class="form-textarea" style="min-height:60px;resize:none">
+        <p class="text-muted text-sm" style="margin-top:8px">.txt will be added automatically</p>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="closeExportModal()">Cancel</button>
+        <button class="btn-save" onclick="confirmExport()">Export</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="updateModalOverlay">
+  <div class="modal-dialog">
+    <div class="workspace-title-container">
+      <h2 class="workspace-title">Update Prompt</h2>
+      <button onclick="closeUpdateModal()" class="modal-close">&times;</button>
+    </div>
+    <div style="padding:32px">
+      <p id="updateMessage" class="modal-text"></p>
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="closeUpdateModal()">Cancel</button>
+        <button onclick="confirmUpdate()" class="action-btn primary" style="padding:12px 24px;border-radius:8px">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModalOverlay">
+  <div class="modal-dialog">
+    <div class="workspace-title-container" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
+      <h2 class="workspace-title">DELETE PROMPTS</h2>
+      <button onclick="closeDeleteModal()" class="modal-close">&times;</button>
+    </div>
+    <div style="padding:32px">
+      <p id="deleteMessage" class="modal-text"></p>
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-delete btn-modal" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="quickGuideOverlay">
+  <div class="modal-dialog" style="max-width:600px">
+    <div class="workspace-title-container">
+      <h2 class="workspace-title">GETTING STARTED</h2>
+      <button onclick="closeQuickGuide()" class="modal-close">&times;</button>
+    </div>
+    <div style="padding:32px;line-height:1.8">
+      <h3 class="modal-title">
+        <span style="display:inline-flex;width:32px;height:32px;background:#22c55e;border-radius:8px;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,197,94,.4)">
+          <svg style="width:20px;height:20px;stroke:#121212;fill:none;stroke-width:2.5" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </span>
+        Build Your Prompt Workspace
+      </h3>
+      <p class="text-primary" style="margin-bottom:12px"><strong>Collect Prompts You Find Anywhere</strong><br>
+      Found a great prompt on LinkedIn, Twitter, or Reddit? Click <strong>"Add Prompt"</strong> to paste it in, give it a title, and save it to your workspace.</p>
+      <p style="margin-bottom:24px"><strong>Organize & Search</strong><br>
+      Use the search bar to find exactly what you need. Star your favorites for quick access.</p>
+
+      <h3 class="modal-title">
+        <span style="display:inline-flex;width:32px;height:32px;background:#22c55e;border-radius:8px;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,197,94,.4)">
+          <svg style="width:20px;height:20px;stroke:#121212;fill:none;stroke-width:2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/></svg>
+        </span>
+        Develop Better Prompts Through Iteration
+      </h3>
+      <p class="text-primary" style="margin-bottom:12px"><strong>The Secret to Great Prompts: Refinement</strong></p>
+      <ol class="text-primary" style="margin-left:20px;margin-bottom:12px">
+        <li style="margin-bottom:8px"><strong>Start with a base prompt</strong> - Copy one from your library or add a new one</li>
+        <li style="margin-bottom:8px"><strong>Test it</strong> - Use it with your AI tool and see the results</li>
+        <li style="margin-bottom:8px"><strong>Come back and refine</strong> - Edit the prompt based on what worked and what didn't</li>
+        <li style="margin-bottom:8px"><strong>Save iterations</strong> - Use "Save As New" to keep different versions</li>
+        <li style="margin-bottom:8px"><strong>Compare & improve</strong> - Review your variations to identify what makes prompts effective</li>
+      </ol>
+      <p style="margin-bottom:24px;padding:16px;background:rgba(34,197,94,.1);border-left:4px solid #22c55e;border-radius:4px"><strong>Pro Tip:</strong> The best prompts are rarely perfect on the first try. Build a collection of working prompts you can reference and remix.</p>
+
+      <h3 class="modal-title">
+        <span style="display:inline-flex;width:32px;height:32px;background:#22c55e;border-radius:8px;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,197,94,.4)">
+          <svg style="width:20px;height:20px;stroke:#121212;fill:none;stroke-width:2.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </span>
+        Quick Actions
+      </h3>
+      <ul class="text-primary" style="margin-left:20px;margin-bottom:16px">
+        <li style="margin-bottom:8px"><strong>Copy</strong> - Grab any prompt to use immediately</li>
+        <li style="margin-bottom:8px"><strong>Edit</strong> - Click into the prompt viewer to modify</li>
+        <li style="margin-bottom:8px"><strong>Update Current</strong> - Save changes to the loaded prompt</li>
+        <li style="margin-bottom:8px"><strong>Save As New</strong> - Create a variation without losing the original</li>
+        <li style="margin-bottom:8px"><strong>Export</strong> - Download prompts as .txt files</li>
+        <li style="margin-bottom:8px"><strong>Backup Library</strong> - Save your entire collection as JSON</li>
+        <li style="margin-bottom:8px"><strong>Restore Library</strong> - Load a backup file to replace your current library</li>
+      </ul>
+      <p class="text-primary text-base" style="text-align:center;font-weight:600;margin-top:24px">Ready to start? Add your first prompt and begin building your collection!</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROMPTS={};
+let currentLoadedPromptId=null;
+
+function initializeFavorites(){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');let updated=false;savedPrompts.forEach(prompt=>{if(prompt.favorite===undefined){prompt.favorite=false;updated=true}});if(updated){localStorage.setItem('thinkprompt_saved',JSON.stringify(savedPrompts))}}
+function toggleFavorite(id){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const prompt=savedPrompts.find(p=>p.id==id);if(!prompt)return;prompt.favorite=!prompt.favorite;localStorage.setItem('thinkprompt_saved',JSON.stringify(savedPrompts));const searchTerm=document.getElementById('librarySearch').value;renderPromptsList(searchTerm,'')}
+function loadSystemPrompts(){localStorage.setItem('thinkprompt_saved',JSON.stringify([]))}
+function showCopySuccess(msg,type='success'){const el=document.getElementById('copySuccess');el.textContent=msg;el.className='copy-success';if(type==='warning'){el.classList.add('warning')}else if(type==='error'){el.classList.add('error')}el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
+function saveAsNew(){const text=(document.getElementById('promptDisplay').textContent||'').trim();if(!text){showCopySuccess('No prompt to save','warning');return}const modal=document.getElementById('saveModalOverlay');setTimeout(()=>modal.classList.add('show'),10);document.getElementById('saveTitle').focus()}
+function updateCurrent(){if(!currentLoadedPromptId){showCopySuccess('No prompt loaded','warning');return}const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const prompt=savedPrompts.find(p=>p.id==currentLoadedPromptId);if(!prompt){showCopySuccess('Prompt not found','error');return}document.getElementById('updateMessage').textContent=`Are you sure you want to update "${prompt.title}" with your changes?`;const modal=document.getElementById('updateModalOverlay');setTimeout(()=>modal.classList.add('show'),10)}
+function closeUpdateModal(){document.getElementById('updateModalOverlay').classList.remove('show')}
+function confirmUpdate(){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const prompt=savedPrompts.find(p=>p.id==currentLoadedPromptId);if(!prompt){showCopySuccess('Prompt not found','error');return}const text=document.getElementById('promptDisplay').textContent.trim();prompt.content=text;localStorage.setItem('thinkprompt_saved',JSON.stringify(savedPrompts));closeUpdateModal();showCopySuccess('Prompt updated!');renderPromptsList('','')}
+function closeSaveModal(){document.getElementById('saveModalOverlay').classList.remove('show');document.getElementById('saveTitle').value='';document.getElementById('saveDescription').value=''}
+function confirmSave(){const title=document.getElementById('saveTitle').value.trim();if(!title){showCopySuccess('Please enter a title','warning');return}const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');if(savedPrompts.some(p=>p.title.toLowerCase()===title.toLowerCase())){showCopySuccess('Title already exists','warning');return}const text=document.getElementById('promptDisplay').textContent.trim();savedPrompts.push({id:Date.now(),title,description:document.getElementById('saveDescription').value.trim(),content:text,created:new Date().toLocaleDateString(),timestamp:new Date().toISOString(),favorite:false});localStorage.setItem('thinkprompt_saved',JSON.stringify(savedPrompts));closeSaveModal();showCopySuccess('Saved!')}
+function addSinglePrompt(){document.getElementById('newPromptTitle').value='';document.getElementById('newPromptContent').value='';const modal=document.getElementById('addPromptOverlay');setTimeout(()=>modal.classList.add('show'),10)}
+function closeAddPromptModal(){document.getElementById('addPromptOverlay').classList.remove('show')}
+function backupLibrary(){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');if(savedPrompts.length===0){showCopySuccess('No prompts to backup','warning');return}const backup=JSON.stringify(savedPrompts,null,2);const blob=new Blob([backup],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`thoughtcap-library-backup-${new Date().toISOString().split('T')[0]}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);showCopySuccess('Library backed up!')}
+function restoreLibrary(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=event=>{try{const restored=JSON.parse(event.target.result);if(!Array.isArray(restored)){showCopySuccess('Invalid backup format','error');return}localStorage.setItem('thinkprompt_saved',JSON.stringify(restored));showCopySuccess(`Restored ${restored.length} prompts!`);renderPromptsList('','')}catch(err){showCopySuccess('Error loading backup','error')}};reader.readAsText(file)};input.click()}
+function loadPromptPack(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=event=>{try{const imported=JSON.parse(event.target.result);if(!Array.isArray(imported)){showCopySuccess('Invalid prompt pack format','error');return}const existing=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const combined=[...existing,...imported];localStorage.setItem('thinkprompt_saved',JSON.stringify(combined));showCopySuccess(`Loaded ${imported.length} prompts!`);renderPromptsList('','')}catch(err){showCopySuccess('Error loading prompt pack','error')}};reader.readAsText(file)};input.click()}
+function saveNewPrompt(){const title=document.getElementById('newPromptTitle').value.trim();const content=document.getElementById('newPromptContent').value.trim();if(!title||!content){showCopySuccess('All fields required','warning');return}const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');if(savedPrompts.some(p=>p.title.toLowerCase()===title.toLowerCase())){showCopySuccess('Title already exists','warning');return}savedPrompts.push({id:Date.now(),title,content,created:new Date().toLocaleDateString(),timestamp:new Date().toISOString(),author:'You',favorite:false});localStorage.setItem('thinkprompt_saved',JSON.stringify(savedPrompts));closeAddPromptModal();showCopySuccess('Added!');renderPromptsList('','')}
+function renderPromptsList(searchTerm='',categoryFilter=''){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const list=document.getElementById('libraryList');if(savedPrompts.length===0){list.innerHTML='<div style="text-align:center;padding:40px;border:2px solid #22c55e;border-radius:12px;margin:20px;background:rgba(34,197,94,0.05)"><h3 class="text-primary text-large" style="margin-bottom:8px">Library Empty</h3><p class="text-muted" style="font-size:14px">Add prompts or import a pack to begin organizing.</p></div>';return}let filtered=savedPrompts.filter(p=>p.title.toLowerCase().includes(searchTerm.toLowerCase())||p.content.toLowerCase().includes(searchTerm.toLowerCase()));if(categoryFilter==='favorites'){filtered=filtered.filter(p=>p.favorite===true)}if(filtered.length===0){list.innerHTML='<div class="text-muted" style="text-align:center;padding:40px"><h3>No prompts found</h3></div>';return}list.innerHTML=filtered.map(p=>`<div class="prompt-item"><div onclick="event.stopPropagation()"><input type="checkbox" class="prompt-checkbox" data-prompt-id="${p.id}"></div><div class="prompt-info" onclick="loadPromptFromLibrary('${p.id}')"><div style="display: flex; align-items: center; gap: 8px;"><span onclick="event.stopPropagation(); toggleFavorite('${p.id}')" class="${p.favorite?'icon-star':'text-muted'}" style="cursor: pointer; font-size: 18px; user-select: none;">${p.favorite?'★':'☆'}</span><div style="flex: 1;"><div class="prompt-title">${p.title}</div><div class="prompt-date">${p.created}</div></div></div></div></div>`).join('')}
+function loadPromptFromLibrary(id){const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const prompt=savedPrompts.find(p=>p.id==id);if(!prompt){showCopySuccess('Prompt not found','error');return}const display=document.getElementById('promptDisplay');display.innerHTML='';const pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.style.fontFamily='inherit';pre.style.margin='0';pre.textContent=prompt.content;display.appendChild(pre);currentLoadedPromptId=id;const updateBtn=document.getElementById('updateCurrentBtn');updateBtn.style.opacity='1';updateBtn.style.cursor='pointer';document.querySelectorAll('.prompt-item').forEach(item=>item.classList.remove('active'));event.target.closest('.prompt-item').classList.add('active')}
+function deleteSelectedPrompts(){const checkboxes=document.querySelectorAll('.prompt-checkbox:checked');const selectedIds=Array.from(checkboxes).map(cb=>cb.dataset.promptId);if(selectedIds.length===0){showCopySuccess('No prompts selected','warning');return}const count=selectedIds.length;document.getElementById('deleteMessage').textContent=`Are you sure you want to delete ${count} selected prompt${count>1?'s':''}? This cannot be undone.`;const modal=document.getElementById('deleteModalOverlay');setTimeout(()=>modal.classList.add('show'),10)}
+function closeDeleteModal(){document.getElementById('deleteModalOverlay').classList.remove('show')}
+function confirmDelete(){const checkboxes=document.querySelectorAll('.prompt-checkbox:checked');const selectedIds=Array.from(checkboxes).map(cb=>cb.dataset.promptId);const savedPrompts=JSON.parse(localStorage.getItem('thinkprompt_saved')||'[]');const remaining=savedPrompts.filter(p=>!selectedIds.includes(p.id.toString()));localStorage.setItem('thinkprompt_saved',JSON.stringify(remaining));closeDeleteModal();renderPromptsList('','');showCopySuccess('Deleted!')}
+function copyPrompt(){const text=document.getElementById('promptDisplay').textContent.trim();if(text){navigator.clipboard.writeText(text).then(()=>showCopySuccess('Copied to clipboard!'))}else{showCopySuccess('No prompt to copy','warning')}}
+function editPrompt(){document.getElementById('promptDisplay').focus();showCopySuccess('Click to edit prompt')}
+function exportPrompt(){const text=document.getElementById('promptDisplay').textContent;if(text&&text.trim()){document.getElementById('exportFilename').value='thoughtcap-'+new Date().toISOString().split('T')[0];const modal=document.getElementById('exportModalOverlay');setTimeout(()=>modal.classList.add('show'),10);document.getElementById('exportFilename').focus()}else{showCopySuccess('No prompt to export','warning')}}
+function closeExportModal(){document.getElementById('exportModalOverlay').classList.remove('show');document.getElementById('exportFilename').value=''}
+function confirmExport(){const filename=document.getElementById('exportFilename').value.trim();if(!filename){showCopySuccess('Please enter a filename','warning');return}const text=document.getElementById('promptDisplay').textContent.trim();const blob=new Blob([text],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${filename}.txt`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);closeExportModal();showCopySuccess('Exported!')}
+let showingFavoritesOnly=false;
+function toggleFavoritesFilter(){showingFavoritesOnly=!showingFavoritesOnly;const btn=document.getElementById('favoritesFilter');const searchTerm=document.getElementById('librarySearch').value;if(showingFavoritesOnly){btn.style.background='#22c55e';btn.style.borderColor='#22c55e';btn.style.color='#121212';renderPromptsList(searchTerm,'favorites')}else{btn.style.background='#0f3460';btn.style.borderColor='rgba(34,197,94,.3)';btn.style.color='#e2e8f0';renderPromptsList(searchTerm,'')}}
+function openQuickGuide(){const modal=document.getElementById('quickGuideOverlay');setTimeout(()=>modal.classList.add('show'),10)}
+function closeQuickGuide(){document.getElementById('quickGuideOverlay').classList.remove('show')}
+document.addEventListener('DOMContentLoaded',()=>{initializeFavorites();loadSystemPrompts();renderPromptsList('','');document.getElementById('librarySearch').addEventListener('input',e=>renderPromptsList(e.target.value));document.getElementById('deleteSelected').addEventListener('click',deleteSelectedPrompts)});
+</script>
+</body>
+</html>
